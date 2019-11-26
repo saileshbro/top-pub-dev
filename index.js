@@ -1,5 +1,6 @@
 const request = require("request-promise");
 const cheerio = require("cheerio");
+const fs = require("fs");
 const baseUrl = "https://pub.dev";
 const json = [];
 const homePage = async () => {
@@ -15,7 +16,10 @@ const homePage = async () => {
       i++;
       json.push(obj);
       if (i == packages.length) {
-        console.log(json);
+        fs.writeFileSync(
+          __dirname + "/topDartPackages.json",
+          JSON.stringify({ packages: json })
+        );
       }
     });
   });
@@ -42,7 +46,7 @@ const getFromPackagePage = (url, callback) => {
       if (dep.length != 1) {
         dep.each((i, e) => dependencies.push($(e).text()));
       } else {
-        dependencies = dep.attr("href");
+        dependencies = baseUrl + dep.attr("href");
       }
 
       return callback({
